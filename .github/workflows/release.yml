@@ -21,16 +21,10 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Fetch Qt/MSBuild targets
-        shell: pwsh
-        run: |
-          git clone --depth 1 https://github.com/qt-labs/qt-vsaddin.git $env:RUNNER_TEMP\qt-vsaddin
-
       - name: Build
         shell: pwsh
         run: |
-          $env:QTDIR = $env:Qt6_DIR
-          $env:QtMsBuild = "$env:RUNNER_TEMP\qt-vsaddin\QtMsBuild\QtMsBuild"
+          $env:QTDIR = $env:Qt6_DIR   # set by install-qt-action
           msbuild RLMMToolkit.slnx /p:Configuration=Release /p:Platform=x64 /m
 
       - name: Package
