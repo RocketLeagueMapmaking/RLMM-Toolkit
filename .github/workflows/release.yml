@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags: ['*.*.*']
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.0'
+          cache: true
+          modules: 'core gui network qml quick quickcontrols2 widgets'
+
+      - name: Configure & build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release --parallel
+
+      - name: Package
+        shell: pwsh
+        run: |
+          mkdir dist
+          Copy-Item build/Release/RLMMToolkit.exe dist/
+          windeployqt dist/RLMMToolkit.exe --release --no-translations
+          Compress-Archive dist/* RLMMToolkit-${{ github.ref_name }}.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: RLMMToolkit-*.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts, merge-multiple: true }
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
