@@ -7,6 +7,9 @@
 #include <QNetworkReply>
 #include <QPainter>
 #include <QFontDatabase>
+#include <QVersionNumber>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "filepaths.h"
 #include "version.h"
@@ -72,7 +75,11 @@ bool RTQSplash::initialize() {
 }
 
 bool RTQSplash::checkForUpdates() {
-    QNetworkReply* reply = mNam.get(QNetworkRequest(QUrl(VERSION_URL)));
+    QNetworkRequest request{ QUrl(VERSION_URL) };
+    request.setRawHeader(QByteArray("Accept"), QByteArray("application/vnd.github+json"));
+    request.setRawHeader(QByteArray("User-Agent"), QByteArray("RLMM-Toolkit"));
+
+    QNetworkReply* reply = mNam.get(request);
     bool result = false;
     QEventLoop loop;
 
@@ -82,16 +89,37 @@ bool RTQSplash::checkForUpdates() {
             emit checkFailed();
             return;
         }
-        const QString latest = QString(reply->readAll()).trimmed();
-        if (latest > VERSION_APP)
+
+        // Parse JSON response
+        QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+        if (!doc.isObject()) {
+            emit checkFailed();
+            return;
+        }
+
+        QString tagName = doc.object().value("tag_name").toString();
+        if (tagName.isEmpty()) {
+            emit checkFailed();
+            return;
+        }
+
+        // Strip 'v' prefix if present
+        QString latest = tagName.startsWith('v') ? tagName.mid(1) : tagName;
+
+        // Use QVersionNumber for comparison
+        QVersionNumber currentVer = QVersionNumber::fromString(VERSION_APP);
+        QVersionNumber latestVer = QVersionNumber::fromString(latest);
+
+        if (latestVer > currentVer)
             emit updateAvailable(latest);
         else
             emit upToDate();
         });
 
     QObject::connect(this, &RTQSplash::updateAvailable, [&](const QString& ver) {
-        QMessageBox::information(this, "Update Available",
+        QMessageBox msgBox(QMessageBox::NoIcon, "Update Available",
             QString("Version %1 is available.").arg(ver));
+        msgBox.exec();
         result = true;
         loop.quit();
         });

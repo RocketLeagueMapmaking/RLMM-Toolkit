@@ -15,8 +15,6 @@ RTQMainWindow::RTQMainWindow(QWidget* parent) : QMainWindow(parent)
     mTabBar->addTab("Tab Two");
     mTabBar->addTab("Tab Three");
 
-
-
     layout->addWidget(mTabBar);
 
     setCentralWidget(central);
