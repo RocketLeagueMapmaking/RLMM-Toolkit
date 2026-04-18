@@ -114,7 +114,6 @@
     <QtRcc Include="resources.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="D:\RocketLeagueMapmaking\Logo\logo4_256.png" />
     <Image Include="D:\RocketLeagueMapmaking\Logo\rlmm_toolkit.png" />
   </ItemGroup>
   <ItemGroup>

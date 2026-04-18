@@ -27,7 +27,7 @@ jobs:
           $env:QTDIR = $env:Qt6_DIR   # set by install-qt-action
           msbuild RLMMToolkit.slnx /p:Configuration=Release /p:Platform=x64 /m
 
-- name: Package
+      - name: Package
         shell: pwsh
         run: |
           mkdir dist
