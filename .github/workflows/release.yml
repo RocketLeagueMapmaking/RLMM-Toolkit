@@ -24,8 +24,11 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          $env:QTDIR = $env:Qt6_DIR   # set by install-qt-action
-          msbuild RLMMToolkit.slnx /p:Configuration=Release /p:Platform=x64 /m
+          msbuild RLMMToolkit.slnx `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:QtInstall=$env:QT_ROOT_DIR `
+            /m
 
       - name: Package
         shell: pwsh
