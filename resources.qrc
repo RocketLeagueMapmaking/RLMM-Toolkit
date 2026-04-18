@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/logo4_256.png</file>
+        <file>images/splash.png</file>
+        <file>images/Config-Regular.otf</file>
+    </qresource>
+</RCC>
