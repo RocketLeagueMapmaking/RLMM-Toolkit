@@ -64,6 +64,8 @@ jobs:
           name: dist
           path: dist
 
+      - uses: joncloud/makensis-action@v4
+
       - name: Build installer
         shell: pwsh
         run: makensis /DVERSION=${{ github.ref_name }} /DSRCDIR=dist installer.nsi
