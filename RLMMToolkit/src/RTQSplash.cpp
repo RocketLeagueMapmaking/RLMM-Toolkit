@@ -3,20 +3,17 @@
 #include <thread>
 
 #include <QWidget>
-#include <QMessageBox>
-#include <QNetworkReply>
 #include <QPainter>
 #include <QFontDatabase>
 #include <QVersionNumber>
-#include <QJsonDocument>
-#include <QJsonObject>
 
 #include "filepaths.h"
 #include "version.h"
 
 
-RTQSplash::RTQSplash(QApplication& app) :
-    app(app),
+RTQSplash::RTQSplash(QApplication& app, Updater& updater) :
+    mApp(app),
+    mUpdater(updater),
     QSplashScreen(QPixmap(PATH_SPLASH))
 {
     mLogo = QPixmap(PATH_LOGO).scaled(96, 96, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -53,7 +50,7 @@ bool RTQSplash::run() {
     while (!mInitTasks.isEmpty()) {
         RTQInitTask currentTask = mInitTasks.dequeue();
         showMessage(currentTask.message, Qt::AlignBottom | Qt::AlignRight, Qt::white);
-        app.processEvents();
+        mApp.processEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (currentTask.execute()) {
             showMessage("Complete", Qt::AlignBottom | Qt::AlignRight, Qt::white);
@@ -75,64 +72,6 @@ bool RTQSplash::initialize() {
 }
 
 bool RTQSplash::checkForUpdates() {
-    QNetworkRequest request{ QUrl(VERSION_URL) };
-    request.setRawHeader(QByteArray("Accept"), QByteArray("application/vnd.github+json"));
-    request.setRawHeader(QByteArray("User-Agent"), QByteArray("RLMM-Toolkit"));
-
-    QNetworkReply* reply = mNam.get(request);
-    bool result = false;
-    QEventLoop loop;
-
-    QObject::connect(reply, &QNetworkReply::finished, [&]() {
-        reply->deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            emit checkFailed();
-            return;
-        }
-
-        // Parse JSON response
-        QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-        if (!doc.isObject()) {
-            emit checkFailed();
-            return;
-        }
-
-        QString tagName = doc.object().value("tag_name").toString();
-        if (tagName.isEmpty()) {
-            emit checkFailed();
-            return;
-        }
-
-        // Strip 'v' prefix if present
-        QString latest = tagName.startsWith('v') ? tagName.mid(1) : tagName;
-
-        // Use QVersionNumber for comparison
-        QVersionNumber currentVer = QVersionNumber::fromString(VERSION_APP);
-        QVersionNumber latestVer = QVersionNumber::fromString(latest);
-
-        if (latestVer > currentVer)
-            emit updateAvailable(latest);
-        else
-            emit upToDate();
-        });
-
-    QObject::connect(this, &RTQSplash::updateAvailable, [&](const QString& ver) {
-        QMessageBox msgBox(QMessageBox::NoIcon, "Update Available",
-            QString("Version %1 is available.").arg(ver));
-        msgBox.exec();
-        result = true;
-        loop.quit();
-        });
-
-    QObject::connect(this, &RTQSplash::upToDate, [&]() {
-        result = true;
-        loop.quit();
-        });
-
-    QObject::connect(this, &RTQSplash::checkFailed, [&]() {
-        loop.quit();
-        });
-
-    loop.exec();
-    return result;
+    mUpdater.checkForUpdate(QUrl(VERSION_URL));
+    return true;
 }

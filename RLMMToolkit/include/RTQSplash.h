@@ -10,6 +10,8 @@
 
 #include <functional>
 
+#include "Updater.h"
+
 class RTQInitTask {
 public:
 	explicit RTQInitTask(const QString& message, std::function<bool()> func);
@@ -24,15 +26,10 @@ private:
 class RTQSplash : public QSplashScreen {
 Q_OBJECT
 public:
-	RTQSplash(QApplication& app);
+	RTQSplash(QApplication& app, Updater& updater);
 	~RTQSplash();
 
 	bool run();
-
-signals:
-	void updateAvailable(const QString& version);
-	void upToDate();
-	void checkFailed();
 
 protected:
 	void drawContents(QPainter* painter) override;
@@ -41,8 +38,8 @@ private:
 	bool initialize();
 	bool checkForUpdates();
 
-	QApplication& app;
-	QNetworkAccessManager mNam;
+	QApplication& mApp;
+	Updater& mUpdater;
 
 	QPixmap mLogo;
 	QFont mConfigFont;

@@ -1,3 +1,9 @@
+# Compiled Files
+*.exe
+*.dll
+*.so
+dist/
+
 # VS Build and metadata
 .vs/
 out/

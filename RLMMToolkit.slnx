@@ -3,4 +3,5 @@
     <Platform Name="x64" />
   </Configurations>
   <Project Path="RLMMToolkit/RLMMToolkit.vcxproj" Id="995e33dd-9774-43dc-b277-0e3adcdaf12a" />
+  <Project Path="RLMMUpdater/RLMMUpdater.vcxproj" Id="d5637680-70b7-43b6-90fe-c361bbb74cbd" />
 </Solution>

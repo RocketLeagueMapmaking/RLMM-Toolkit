@@ -30,30 +30,64 @@ jobs:
             /p:QtInstall=$env:QT_ROOT_DIR `
             /m
 
-      - name: Package
+      - name: Stage deployable
         shell: pwsh
         run: |
           mkdir dist
           Copy-Item x64/Release/RLMMToolkit.exe dist/
           windeployqt dist/RLMMToolkit.exe --release --no-translations
-          Compress-Archive dist/* RLMMToolkit-${{ github.ref_name }}.zip
+
+      - name: Zip
+        shell: pwsh
+        run: Compress-Archive dist/* RLMMToolkit-${{ github.ref_name }}.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows
+          name: dist
+          path: dist
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zip
           path: RLMMToolkit-*.zip
           if-no-files-found: error
 
-  release:
+  installer:
     needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Build installer
+        shell: pwsh
+        run: makensis /DVERSION=${{ github.ref_name }} /DSRCDIR=dist installer.nsi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: RLMMToolkit-*-setup.exe
+          if-no-files-found: error
+
+  release:
+    needs: [build, installer]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/download-artifact@v4
-        with: { path: artifacts, merge-multiple: true }
+        with:
+          path: artifacts
+          merge-multiple: true
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/*
+          files: |
+            artifacts/RLMMToolkit-*.zip
+            artifacts/RLMMToolkit-*-setup.exe
           generate_release_notes: true

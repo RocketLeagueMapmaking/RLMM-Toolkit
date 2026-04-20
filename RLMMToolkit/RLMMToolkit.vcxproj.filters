@@ -35,7 +35,16 @@
     <ClCompile Include="src\RTQSplash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
+    <ClCompile Include="src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Updater\Updater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Updater\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,6 +68,9 @@
     <QtMoc Include="include\RTQWidgets.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Updater\Updater.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
@@ -75,7 +87,10 @@
     <ClInclude Include="include\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h">
+    <ClInclude Include="include\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Updater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

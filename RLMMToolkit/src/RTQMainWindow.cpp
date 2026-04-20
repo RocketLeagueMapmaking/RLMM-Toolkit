@@ -2,7 +2,6 @@
 #include <QLabel>
 
 #include "RTQMainWindow.h"
-#include "UpdateChecker.h"
 
 RTQMainWindow::RTQMainWindow(QWidget* parent) : QMainWindow(parent)
 {   
