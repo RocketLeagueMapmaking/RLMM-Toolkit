@@ -38,12 +38,6 @@
     <ClCompile Include="src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Updater\Updater.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Updater\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,11 +46,6 @@
     <QtRcc Include="resources.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="D:\RocketLeagueMapmaking\Logo\rlmm_toolkit.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\RTQMainWindow.h">
@@ -68,7 +57,7 @@
     <QtMoc Include="include\RTQWidgets.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Updater\Updater.h">
+    <QtMoc Include="include\Updater.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -88,9 +77,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Updater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
