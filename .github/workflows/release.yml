@@ -24,6 +24,16 @@ jobs:
           cache: true
           modules: ''
 
+      - name: Extract version
+        id: ver
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v3
 
@@ -33,6 +43,7 @@ jobs:
           msbuild RLMMToolkit.slnx `
             /p:Configuration=Release `
             /p:Platform=x64 `
+            /p:AppVersion=${{ steps.ver.outputs.version }} `
             /p:QtInstall=$env:QT_ROOT_DIR `
             /m
 
@@ -97,7 +108,7 @@ jobs:
           pattern: '{exe,installer}'
           merge-multiple: true
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.version || github.ref_name }}
           files: artifacts/*

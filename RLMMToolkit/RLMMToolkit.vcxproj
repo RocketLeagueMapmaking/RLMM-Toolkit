@@ -45,6 +45,9 @@
     <QtModules>core;gui;network;qml;quick;quickcontrols2;widgets</QtModules>
     <QtDeploy>true</QtDeploy>
   </PropertyGroup>
+  <PropertyGroup>
+    <AppVersion Condition="'$(AppVersion)'==''">0.0.0-dev</AppVersion>
+  </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
   </Target>

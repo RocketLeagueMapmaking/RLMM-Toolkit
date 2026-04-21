@@ -22,7 +22,7 @@ signals:
 	void progress(qint64 bytesReceived, qint64 bytesTotal);
 	void failed(const QString& reason);
 
-	void updateAvailable(const QString& version);
+	void updateAvailable(const QString& version, const QUrl& assetUrl, const QByteArray& sha256Hex);
 	void upToDate();
 
 private:

@@ -12,6 +12,7 @@
 #include <QUrl>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QVersionNumber>
 #include <QMessageBox>
 #include <QAbstractButton>
@@ -46,25 +47,39 @@ void Updater::checkForUpdate(const QUrl& releaseUrl)
             emit failed("Invalid JSON");
             return;
         }
-
+        const QJsonObject root = doc.object();
         QString tagName = doc.object().value("tag_name").toString();
         if (tagName.isEmpty()) {
             emit failed("Invalid tag");
             return;
         }
-
-        QString latest = tagName.startsWith('v') ? tagName.mid(1) : tagName;
+        QUrl assetUrl;
+        QByteArray assetSha;
+        const QJsonArray assets = root.value("assets").toArray();
+        for (const QJsonValue& v : assets) {
+            const QJsonObject asset = v.toObject();
+            if (asset.value("name").toString().endsWith(".zip")) {
+                assetUrl = QUrl(asset.value("browser_download_url").toString());
+                assetSha = asset.value("digest").toString().section(':', 1).toUtf8();
+                break;
+            }
+        }
+        if (assetUrl.isEmpty() || assetSha.isEmpty()) {
+            emit failed("Missing release asset");
+            return;
+        }
 
         QVersionNumber currentVer = QVersionNumber::fromString(VERSION_APP);
-        QVersionNumber latestVer = QVersionNumber::fromString(latest);
+        QVersionNumber latestVer = QVersionNumber::fromString(tagName);
 
         if (latestVer > currentVer)
-            emit updateAvailable(latest);
+            emit updateAvailable(tagName, assetUrl, assetSha);
         else
             emit upToDate();
         });
 
-    QObject::connect(this, &Updater::updateAvailable, [&](const QString& ver) {
+    QObject::connect(this, &Updater::updateAvailable,
+        [&](const QString& ver, const QUrl& url, const QByteArray& sha) {
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::NoIcon);
         msgBox.setWindowTitle("Update Available");
@@ -75,7 +90,7 @@ void Updater::checkForUpdate(const QUrl& releaseUrl)
         msgBox.exec();
 
         if (msgBox.clickedButton() == updateBtn) {
-            startUpdate(QUrl(RELEASE_URL), RELEASE_SHA);
+            startUpdate(url, sha);
         }
 
         loop.quit();
@@ -152,6 +167,7 @@ void Updater::launchHelperAndExit()
         mDownloadPath,
         QCoreApplication::applicationFilePath()
     };
-    QProcess::startDetached(helper, args);
+    qint64 pid = 0;
+    QProcess::startDetached(helper, args, QString(), &pid);
     QCoreApplication::quit();
 }

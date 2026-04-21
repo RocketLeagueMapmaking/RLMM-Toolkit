@@ -16,6 +16,14 @@ RequestExecutionLevel admin
 Unicode true
 
 !define MUI_ABORTWARNING
+
+!define MUI_FINISHPAGE_RUN "$INSTDIR\RLMMToolkit.exe"
+!define MUI_FINISHPAGE_RUN_TEXT "Run RLMM Toolkit"
+
+!define MUI_FINISHPAGE_SHOWREADME ""
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Create desktop shortcut"
+!define MUI_FINISHPAGE_SHOWREADME_FUNCTION CreateDesktopShortcut
+
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -25,6 +33,10 @@ Unicode true
 !insertmacro MUI_LANGUAGE "English"
 
 !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\RLMMToolkit"
+
+Function CreateDesktopShortcut
+  CreateShortcut "$DESKTOP\RLMM Toolkit.lnk" "$INSTDIR\RLMMToolkit.exe"
+FunctionEnd
 
 Section "Install"
   SetOutPath "$INSTDIR"
@@ -46,6 +58,7 @@ Section "Install"
 SectionEnd
 
 Section "Uninstall"
+  Delete "$DESKTOP\RLMM Toolkit.lnk"
   Delete "$SMPROGRAMS\RLMMToolkit\RLMM Toolkit.lnk"
   Delete "$SMPROGRAMS\RLMMToolkit\Uninstall.lnk"
   RMDir  "$SMPROGRAMS\RLMMToolkit"
