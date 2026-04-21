@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-2025-vs2026
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -24,7 +24,7 @@ jobs:
           cache: true
           modules: ''
 
-      - name: Setup MSBuild
+      - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v2
 
       - name: Build
@@ -36,7 +36,7 @@ jobs:
             /p:QtInstall=$env:QT_ROOT_DIR `
             /m
 
-      - name: Stage deployable
+      - name: Deploy
         shell: pwsh
         run: |
           mkdir dist
@@ -47,13 +47,13 @@ jobs:
         shell: pwsh
         run: Compress-Archive dist/* RLMMToolkit-${{ github.ref_name }}.zip
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: dist
           path: dist
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: zip
           path: RLMMToolkit-*.zip
@@ -63,20 +63,22 @@ jobs:
     needs: build
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: dist
           path: dist
 
       - uses: joncloud/makensis-action@v4
 
-      - name: Build installer
+      - name: Build Installer
         shell: pwsh
-        run: makensis /DVERSION=${{ github.ref_name }} /DSRCDIR=dist installer.nsi
+        run: |
+          $env:PATH += ';C:\Program Files (x86)\NSIS'
+          makensis /DVERSION=${{ inputs.version || github.ref_name }} /DSRCDIR=dist installer.nsi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: installer
           path: RLMMToolkit-*-setup.exe
@@ -88,7 +90,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with: { path: artifacts, merge-multiple: true }
 
       - uses: softprops/action-gh-release@v2
