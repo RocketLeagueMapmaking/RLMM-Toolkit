@@ -74,9 +74,10 @@ jobs:
         shell: pwsh
         run: choco install nsis -y --no-progress
 
-      - name: Build Installer
+      - name: Build installer
         shell: pwsh
-        run: makensis /DVERSION=${{ inputs.version || github.ref_name }} /DSRCDIR=dist installer.nsi
+        run: |
+          & 'C:\Program Files (x86)\NSIS\makensis.exe' /DVERSION=${{ inputs.version || github.ref_name }} /DSRCDIR=dist installer.nsi
 
       - uses: actions/upload-artifact@v6
         with:
