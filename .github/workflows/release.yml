@@ -65,20 +65,18 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: repolevedavaj/install-nsis@v1.0.1
-        with:
-          nsis-version: '3.10'
-
       - uses: actions/download-artifact@v7
         with:
           name: dist
           path: dist
 
+      - name: Install NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
+
       - name: Build Installer
         shell: pwsh
-        run: |
-          $env:PATH += ';C:\Program Files (x86)\NSIS'
-          makensis /DVERSION=${{ inputs.version || github.ref_name }} /DSRCDIR=dist installer.nsi
+        run: makensis /DVERSION=${{ inputs.version || github.ref_name }} /DSRCDIR=dist installer.nsi
 
       - uses: actions/upload-artifact@v6
         with:
