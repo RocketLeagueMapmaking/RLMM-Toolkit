@@ -55,7 +55,7 @@ jobs:
 
       - uses: actions/upload-artifact@v6
         with:
-          name: zip
+          name: exe
           path: RLMMToolkit-*.zip
           if-no-files-found: error
 
@@ -94,7 +94,7 @@ jobs:
       - uses: actions/download-artifact@v7
         with:
           path: artifacts
-          pattern: '{windows,installer}'
+          pattern: '{exe,installer}'
           merge-multiple: true
 
       - uses: softprops/action-gh-release@v2
