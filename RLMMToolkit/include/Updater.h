@@ -21,18 +21,12 @@ public:
 signals:
 	void progress(qint64 bytesReceived, qint64 bytesTotal);
 	void failed(const QString& reason);
-
 	void updateAvailable(const QString& version, const QUrl& assetUrl, const QByteArray& sha256Hex);
 	void upToDate();
 
 private:
-	void onFinished();
-	bool verifyChecksum() const;
-	void launchHelperAndExit();
+	QUrl mAssetUrl;
+	QByteArray mAssetSha;
 
 	QNetworkAccessManager& mNam;
-	QNetworkReply* mReply = nullptr;
-	QFile* mDownloadFile = nullptr;
-	QString mDownloadPath;
-	QByteArray mExpectedSha256Hex;
 };

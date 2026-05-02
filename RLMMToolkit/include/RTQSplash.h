@@ -12,14 +12,21 @@
 
 #include "Updater.h"
 
-class RTQInitTask {
+class RTQInitTask : public QObject {
+    Q_OBJECT
 public:
-	explicit RTQInitTask(const QString& message, std::function<bool()> func);
-	bool execute() { return mFunc(); }
+	RTQInitTask(const QString& message, std::function<void(RTQInitTask&)> func, QObject* parent = nullptr);
+	
+	void execute() { mFunc(*this); }
+	void complete(bool success) { emit finished(success); };
+	
 	QString message;
 
+signals:
+	void finished(bool success);
+
 private:
-	std::function<bool()> mFunc;
+	std::function<void(RTQInitTask&)> mFunc;
 };
 
 
@@ -30,13 +37,18 @@ public:
 	~RTQSplash();
 
 	bool run();
+	void enqueueTask(const QString& message, std::function<void(RTQInitTask&)> func);
 
 protected:
 	void drawContents(QPainter* painter) override;
 
 private:
-	bool initialize();
-	bool checkForUpdates();
+	void initialize(RTQInitTask& task);
+	void checkForUpdates(RTQInitTask& task);
+
+	void onUpdateAvailable(RTQInitTask& task, const QString& ver, const QUrl& url, const QByteArray& sha);
+	void onUpToDate(RTQInitTask& task);
+	void onUpdateFailed(RTQInitTask& task, const QString& err);
 
 	QApplication& mApp;
 	Updater& mUpdater;
@@ -44,7 +56,7 @@ private:
 	QPixmap mLogo;
 	QFont mConfigFont;
 
-	QQueue<RTQInitTask> mInitTasks;
+	QQueue<RTQInitTask*> mInitTasks;
 };
 
 

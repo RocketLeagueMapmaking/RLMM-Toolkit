@@ -3,7 +3,7 @@
 #include <QByteArray>
 
 #ifndef VERSION_APP
-#define VERSION_APP "0.0.0-test"
+#define VERSION_APP "0.0.0"
 #endif
 
 static const QString VERSION_URL = "https://api.github.com/repos/RocketLeagueMapmaking/RLMM-Toolkit/releases/latest";

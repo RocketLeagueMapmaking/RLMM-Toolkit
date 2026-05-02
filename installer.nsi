@@ -58,6 +58,10 @@ Section "Install"
 SectionEnd
 
 Section "Uninstall"
+  ; Stop the updater if it's running so RMDir /r doesn't fail on a locked exe
+  nsExec::Exec 'taskkill /F /IM RLMMUpdater.exe'
+  nsExec::Exec 'taskkill /F /IM RLMMToolkit.exe'
+
   Delete "$DESKTOP\RLMM Toolkit.lnk"
   Delete "$SMPROGRAMS\RLMMToolkit\RLMM Toolkit.lnk"
   Delete "$SMPROGRAMS\RLMMToolkit\Uninstall.lnk"
