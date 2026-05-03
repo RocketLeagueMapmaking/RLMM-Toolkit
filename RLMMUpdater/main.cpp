@@ -218,8 +218,15 @@ static bool extractZip(const fs::path& zipPath, const fs::path& destDir) {
 // ---------- copy tree with retry ----------
 
 static bool copyTreeWithRetry(const fs::path& srcDir, const fs::path& dstDir) {
+    wchar_t selfPath[MAX_PATH];
+    GetModuleFileNameW(nullptr, selfPath, MAX_PATH);
+    fs::path selfName = fs::path(selfPath).filename();
+    
     for (auto& entry : fs::recursive_directory_iterator(srcDir)) {
         if (!entry.is_regular_file()) {
+            continue;
+        }
+        if (entry.path().filename() == selfName) {
             continue;
         }
 
