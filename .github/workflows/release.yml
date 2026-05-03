@@ -52,6 +52,7 @@ jobs:
         run: |
           mkdir dist
           Copy-Item x64/Release/RLMMToolkit.exe dist/
+          Copy-Item x64/Release/RLMMUpdater.exe dist/
           windeployqt dist/RLMMToolkit.exe --release --no-translations
 
       - name: Zip
